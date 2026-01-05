@@ -17,11 +17,6 @@ echo ""
 echo "=== Analysis ==="
 FAIL=0
 
-# Test files:
-# - src/excluded/Test.svelte    -> should NOT appear (tsconfig exclude)
-# - src/routes/pragma-test.svelte -> should NOT appear (svelte-ignore pragma)
-# - src/routes/no-pragma-test.svelte -> SHOULD appear (no pragma, expected warning)
-
 echo ""
 echo "src/excluded/Test.svelte (should NOT warn - tsconfig exclude):"
 echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'excluded/Test' || true)"
@@ -38,6 +33,14 @@ echo ""
 echo "src/routes/no-pragma-test.svelte (SHOULD warn - no pragma):"
 echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'no-pragma-test' || true)"
 echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'no-pragma-test' || true)"
+
+echo ""
+echo "src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector, export_let_unused):"
+SC_MISSING=$(echo "$SC_OUT" | grep -c 'missing-checks-test' || true)
+RS_MISSING=$(echo "$RS_OUT" | grep -c 'missing-checks-test' || true)
+echo "  svelte-check:    $SC_MISSING"
+echo "  svelte-check-rs: $RS_MISSING"
+[ "$RS_MISSING" -lt "$SC_MISSING" ] && FAIL=1 && echo "  ❌ FAIL (missing checks not implemented)"
 
 echo ""
 if [ "$FAIL" -eq 1 ]; then

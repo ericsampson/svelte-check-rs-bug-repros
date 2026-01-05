@@ -46,10 +46,12 @@ echo "  svelte-check-rs: $RS_MISSING"
 [ "$RS_MISSING" -lt "$SC_MISSING" ] && FAIL=1 && echo "  ❌ FAIL (missing checks not implemented)"
 
 echo ""
+echo "=== Result ==="
+echo ""
 if [ "$FAIL" -eq 1 ]; then
-  echo "❌ RESULT: FAIL"
+  echo "❌ FAIL"
   exit 1
 else
-  echo "✓ RESULT: PASS"
+  echo "✓ PASS"
   exit 0
 fi

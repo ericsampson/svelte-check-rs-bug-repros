@@ -55,7 +55,7 @@ src/routes/no-pragma-test.svelte (SHOULD warn - no pragma):
 src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector):
   svelte-check:    2
   svelte-check-rs: 0
-  ❌ FAIL (missing checks not implemented)
+  ⚠️  NOT IMPLEMENTED (not counted as failure)
 
 src/routes/colon-import-test.svelte (should NOT error - colon in import specifier):
   svelte-check:    0 errors

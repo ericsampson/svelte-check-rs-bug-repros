@@ -1,73 +1,49 @@
 #!/bin/bash
-# Test script to compare svelte-check vs svelte-check-rs behavior
 set -o pipefail
-
-FAIL=0
 
 echo "=== svelte-check-rs bug repro ==="
 echo ""
 
-echo "========================================"
 echo "=== svelte-check (official) ==="
-echo "========================================"
 SC_OUT=$(bunx svelte-check --tsconfig ./tsconfig.json --output machine 2>&1)
 echo "$SC_OUT"
 echo ""
 
-echo "========================================"
 echo "=== svelte-check-rs ==="
-echo "========================================"
-RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output json 2>&1)
+RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output machine 2>&1)
 echo "$RS_OUT"
 echo ""
 
-echo "========================================"
 echo "=== Analysis ==="
-echo "========================================"
+FAIL=0
 
-# Issue 1: tsconfig exclude (src/excluded/** should be excluded)
-SC_EXCLUDED=$(echo "$SC_OUT" | grep -c "src/excluded" || true)
-RS_EXCLUDED=$(echo "$RS_OUT" | jq '[.[] | select(.filename | startswith("src/excluded"))] | length')
-
-echo ""
-echo "Issue 1: tsconfig exclude"
-echo "  Files in src/excluded/ should not be checked"
-echo "  svelte-check:    $SC_EXCLUDED warnings from src/excluded/"
-echo "  svelte-check-rs: $RS_EXCLUDED warnings from src/excluded/"
-
-if [ "$SC_EXCLUDED" -eq 0 ] && [ "$RS_EXCLUDED" -gt 0 ]; then
-  echo "  ❌ FAIL: svelte-check-rs does not respect tsconfig exclude"
-  FAIL=1
-elif [ "$SC_EXCLUDED" -eq 0 ] && [ "$RS_EXCLUDED" -eq 0 ]; then
-  echo "  ✓ PASS"
-fi
-
-# Issue 2: svelte-ignore pragma
-# +page.svelte has 2 divs with tabindex: one with svelte-ignore, one without
-# Expected: 1 warning (only the one without pragma)
-SC_PAGE=$(echo "$SC_OUT" | grep -c "+page.svelte" || true)
-RS_PAGE=$(echo "$RS_OUT" | jq '[.[] | select(.filename | endswith("+page.svelte"))] | length')
+# Test files:
+# - src/excluded/Test.svelte    -> should NOT appear (tsconfig exclude)
+# - src/routes/pragma-test.svelte -> should NOT appear (svelte-ignore pragma)
+# - src/routes/no-pragma-test.svelte -> SHOULD appear (no pragma, expected warning)
 
 echo ""
-echo "Issue 2: svelte-ignore pragma"
-echo "  +page.svelte has 2 tabindex divs: one with pragma, one without"
-echo "  Expected: 1 warning (pragma should suppress the other)"
-echo "  svelte-check:    $SC_PAGE warnings"
-echo "  svelte-check-rs: $RS_PAGE warnings"
-
-if [ "$SC_PAGE" -eq 1 ] && [ "$RS_PAGE" -gt 1 ]; then
-  echo "  ❌ FAIL: svelte-check-rs does not respect svelte-ignore pragma"
-  FAIL=1
-elif [ "$SC_PAGE" -eq 1 ] && [ "$RS_PAGE" -eq 1 ]; then
-  echo "  ✓ PASS"
-fi
+echo "src/excluded/Test.svelte (should NOT warn - tsconfig exclude):"
+echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'excluded/Test' || true)"
+echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'excluded/Test' || true)"
+[ "$(echo "$RS_OUT" | grep -c 'excluded/Test' || true)" -gt 0 ] && FAIL=1 && echo "  ❌ FAIL"
 
 echo ""
-echo "========================================"
+echo "src/routes/pragma-test.svelte (should NOT warn - has svelte-ignore):"
+echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'routes/pragma-test' || true)"
+echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'routes/pragma-test' || true)"
+[ "$(echo "$RS_OUT" | grep -c 'routes/pragma-test' || true)" -gt 0 ] && FAIL=1 && echo "  ❌ FAIL"
+
+echo ""
+echo "src/routes/no-pragma-test.svelte (SHOULD warn - no pragma):"
+echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'no-pragma-test' || true)"
+echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'no-pragma-test' || true)"
+
+echo ""
 if [ "$FAIL" -eq 1 ]; then
-  echo "RESULT: FAIL (behavior differs)"
+  echo "RESULT: FAIL"
   exit 1
 else
-  echo "RESULT: PASS (behavior matches)"
+  echo "RESULT: PASS"
   exit 0
 fi

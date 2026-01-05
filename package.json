@@ -9,7 +9,8 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
-		"check:rs": "svelte-check-rs --tsconfig ./tsconfig.json"
+		"check:rs": "svelte-check-rs --tsconfig ./tsconfig.json",
+		"test:repro": "./test-repro.sh"
 	},
 	"devDependencies": {
 		"@happy-dom/global-registrator": "^20.0.11",

@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "strictFunctionTypes": false,
+    "tsBuildInfoFile": "/workspace/repos/svelte-check-rs-tsconfig-repro/./.svelte-check-rs/tsgo.tsbuildinfo"
+  },
+  "extends": "./tsconfig.json"
+}

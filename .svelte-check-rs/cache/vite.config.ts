@@ -1,0 +1,1 @@
+/workspace/repos/svelte-check-rs-tsconfig-repro/./vite.config.ts

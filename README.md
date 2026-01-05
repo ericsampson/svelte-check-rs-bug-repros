@@ -1,6 +1,6 @@
 # svelte-check-rs bug repros
 
-Minimal reproductions for `svelte-check-rs` issues.
+Minimal reproductions for `svelte-check-rs` issues compared to the original `svelte-check` implementation.
 
 ## Issues
 

@@ -1,48 +1,75 @@
 #!/bin/bash
 # Test script to compare svelte-check vs svelte-check-rs behavior
+set -o pipefail
+
+FAIL=0
 
 echo "=== svelte-check-rs bug repro ==="
 echo ""
-
-echo "--- Issue 1: tsconfig exclude ---"
-echo "tsconfig.json excludes: src/excluded/**"
+echo "tsconfig.json exclude: src/excluded/**"
+echo "svelte-ignore pragma on line 10 of src/routes/+page.svelte"
 echo ""
 
+echo "========================================"
+echo "=== svelte-check (official) output ==="
+echo "========================================"
 SC_OUT=$(bunx svelte-check --tsconfig ./tsconfig.json --output machine 2>&1)
-RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output machine 2>&1)
+echo "$SC_OUT"
+echo ""
 
+echo "========================================"
+echo "=== svelte-check-rs output ==="
+echo "========================================"
+RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output machine 2>&1)
+echo "$RS_OUT"
+echo ""
+
+echo "========================================"
+echo "=== Analysis ==="
+echo "========================================"
+
+# Issue 1: tsconfig exclude
 SC_EXCLUDED=$(echo "$SC_OUT" | grep -c "src/excluded" || true)
 RS_EXCLUDED=$(echo "$RS_OUT" | grep -c "src/excluded" || true)
 
-echo "svelte-check:    src/excluded/ warnings = $SC_EXCLUDED (expected: 0)"
-echo "svelte-check-rs: src/excluded/ warnings = $RS_EXCLUDED (expected: 0)"
+echo ""
+echo "Issue 1: tsconfig exclude for Svelte diagnostics"
+echo "  svelte-check:    src/excluded/ warnings = $SC_EXCLUDED"
+echo "  svelte-check-rs: src/excluded/ warnings = $RS_EXCLUDED"
 
 if [ "$SC_EXCLUDED" -eq 0 ] && [ "$RS_EXCLUDED" -gt 0 ]; then
-  echo "❌ FAIL: svelte-check-rs ignores tsconfig exclude"
+  echo "  ❌ FAIL: svelte-check-rs does not respect tsconfig exclude"
+  FAIL=1
+elif [ "$SC_EXCLUDED" -eq 0 ] && [ "$RS_EXCLUDED" -eq 0 ]; then
+  echo "  ✓ PASS: both respect tsconfig exclude"
 else
-  echo "✓ PASS"
+  echo "  ? UNEXPECTED: svelte-check=$SC_EXCLUDED, svelte-check-rs=$RS_EXCLUDED"
 fi
 
-echo ""
-echo "--- Issue 2: svelte-ignore pragma ---"
-echo "Line 10 has: <!-- svelte-ignore a11y_no_noninteractive_tabindex -->"
-echo ""
-
+# Issue 2: svelte-ignore pragma
 SC_LINE10=$(echo "$SC_OUT" | grep -c "+page.svelte.*10:" || true)
 RS_LINE10=$(echo "$RS_OUT" | grep -c "+page.svelte:10:" || true)
 
-echo "svelte-check:    line 10 warnings = $SC_LINE10 (expected: 0)"
-echo "svelte-check-rs: line 10 warnings = $RS_LINE10 (expected: 0)"
+echo ""
+echo "Issue 2: svelte-ignore pragma"
+echo "  svelte-check:    line 10 warnings = $SC_LINE10"
+echo "  svelte-check-rs: line 10 warnings = $RS_LINE10"
 
 if [ "$SC_LINE10" -eq 0 ] && [ "$RS_LINE10" -gt 0 ]; then
-  echo "❌ FAIL: svelte-check-rs ignores svelte-ignore pragma"
+  echo "  ❌ FAIL: svelte-check-rs does not respect svelte-ignore pragma"
+  FAIL=1
+elif [ "$SC_LINE10" -eq 0 ] && [ "$RS_LINE10" -eq 0 ]; then
+  echo "  ✓ PASS: both respect svelte-ignore pragma"
 else
-  echo "✓ PASS"
+  echo "  ? UNEXPECTED: svelte-check=$SC_LINE10, svelte-check-rs=$RS_LINE10"
 fi
 
 echo ""
-echo "--- Summary ---"
-SC_FILES=$(echo "$SC_OUT" | grep "COMPLETED" | sed 's/.*COMPLETED \([0-9]*\) FILES.*/\1/')
-RS_FILES=$(echo "$RS_OUT" | grep "in .* files" | sed 's/.*in \([0-9]*\) files/\1/')
-echo "svelte-check:    $SC_FILES files checked"
-echo "svelte-check-rs: $RS_FILES svelte files checked"
+echo "========================================"
+if [ "$FAIL" -eq 1 ]; then
+  echo "=== RESULT: FAIL (behavior differs) ==="
+  exit 1
+else
+  echo "=== RESULT: PASS (behavior matches) ==="
+  exit 0
+fi

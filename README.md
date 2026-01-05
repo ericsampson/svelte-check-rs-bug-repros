@@ -53,5 +53,5 @@ src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_sel
   svelte-check-rs: 0
   ❌ FAIL (missing checks not implemented)
 
-RESULT: FAIL
+❌ RESULT: FAIL
 ```

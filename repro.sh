@@ -47,9 +47,9 @@ echo "  svelte-check-rs: $RS_MISSING"
 
 echo ""
 if [ "$FAIL" -eq 1 ]; then
-  echo "RESULT: FAIL"
+  echo "❌ RESULT: FAIL"
   exit 1
 else
-  echo "RESULT: PASS"
+  echo "✓ RESULT: PASS"
   exit 0
 fi

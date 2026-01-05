@@ -13,6 +13,8 @@ echo ""
 echo "========================================"
 echo "=== svelte-check (official) output ==="
 echo "========================================"
+echo "(machine format - no JSON available)"
+echo ""
 SC_OUT=$(bunx svelte-check --tsconfig ./tsconfig.json --output machine 2>&1)
 echo "$SC_OUT"
 echo ""
@@ -20,8 +22,10 @@ echo ""
 echo "========================================"
 echo "=== svelte-check-rs output ==="
 echo "========================================"
-RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output machine 2>&1)
-echo "$RS_OUT"
+echo "(JSON format)"
+echo ""
+RS_OUT=$(bunx svelte-check-rs --tsconfig ./tsconfig.json --output json 2>&1)
+echo "$RS_OUT" | head -80
 echo ""
 
 echo "========================================"
@@ -30,7 +34,7 @@ echo "========================================"
 
 # Issue 1: tsconfig exclude
 SC_EXCLUDED=$(echo "$SC_OUT" | grep -c "src/excluded" || true)
-RS_EXCLUDED=$(echo "$RS_OUT" | grep -c "src/excluded" || true)
+RS_EXCLUDED=$(echo "$RS_OUT" | grep -c '"filename": "src/excluded' || true)
 
 echo ""
 echo "Issue 1: tsconfig exclude for Svelte diagnostics"
@@ -48,7 +52,7 @@ fi
 
 # Issue 2: svelte-ignore pragma
 SC_LINE10=$(echo "$SC_OUT" | grep -c "+page.svelte.*10:" || true)
-RS_LINE10=$(echo "$RS_OUT" | grep -c "+page.svelte:10:" || true)
+RS_LINE10=$(echo "$RS_OUT" | grep -B1 '"line": 10' | grep -c '"start"' || true)
 
 echo ""
 echo "Issue 2: svelte-ignore pragma"

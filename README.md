@@ -6,7 +6,7 @@ Minimal reproductions for `svelte-check-rs` issues compared to the original `sve
 
 1. **tsconfig exclude not respected** - `src/excluded/` is in tsconfig exclude but still checked
 2. **svelte-ignore pragma not respected** - `<!-- svelte-ignore a11y_* -->` comments are ignored
-3. **Missing Svelte checks** - `block_empty`, `css_unused_selector` not implemented (only a11y checks exist)
+3. **Missing Svelte checks** - only a11y checks exist; missing `block_empty`, `css_unused_selector`, `export_let_unused`
 
 ## Run
 

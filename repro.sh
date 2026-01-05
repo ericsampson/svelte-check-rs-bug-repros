@@ -46,6 +46,14 @@ echo "  svelte-check-rs: $RS_MISSING"
 [ "$RS_MISSING" -lt "$SC_MISSING" ] && FAIL=1 && echo "  ❌ FAIL (missing checks not implemented)"
 
 echo ""
+echo "src/routes/colon-import-test.svelte (should NOT error - colon in import specifier):"
+SC_COLON_ERRORS=$(echo "$SC_OUT" | grep 'colon-import-test' | grep -c 'ERROR' || true)
+RS_COLON_ERRORS=$(echo "$RS_OUT" | grep 'colon-import-test' | grep -c 'ERROR' || true)
+echo "  svelte-check:    $SC_COLON_ERRORS errors"
+echo "  svelte-check-rs: $RS_COLON_ERRORS errors"
+[ "$RS_COLON_ERRORS" -gt 0 ] && FAIL=1 && echo "  ❌ FAIL (parsing error with colon in import)"
+
+echo ""
 echo "=== Result ==="
 echo ""
 if [ "$FAIL" -eq 1 ]; then

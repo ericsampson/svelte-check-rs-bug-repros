@@ -11,7 +11,7 @@ Minimal reproductions for `svelte-check-rs` issues compared to the original `sve
 
 ```bash
 bun install
-bun run test:repro
+bun run repro
 ```
 
 ## Current Output

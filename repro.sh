@@ -38,7 +38,7 @@ echo "  svelte-check-rs: $RS_NOPRAGMA"
 [ "$SC_NOPRAGMA" -eq "$RS_NOPRAGMA" ] && echo "  ✓ PASS"
 
 echo ""
-echo "src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector, export_let_unused):"
+echo "src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector):"
 SC_MISSING=$(echo "$SC_OUT" | grep -c 'missing-checks-test' || true)
 RS_MISSING=$(echo "$RS_OUT" | grep -c 'missing-checks-test' || true)
 echo "  svelte-check:    $SC_MISSING"

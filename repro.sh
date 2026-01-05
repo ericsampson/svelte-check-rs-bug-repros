@@ -31,8 +31,11 @@ echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'routes/pragma-test' || true
 
 echo ""
 echo "src/routes/no-pragma-test.svelte (SHOULD warn - no pragma):"
-echo "  svelte-check:    $(echo "$SC_OUT" | grep -c 'no-pragma-test' || true)"
-echo "  svelte-check-rs: $(echo "$RS_OUT" | grep -c 'no-pragma-test' || true)"
+SC_NOPRAGMA=$(echo "$SC_OUT" | grep -c 'no-pragma-test' || true)
+RS_NOPRAGMA=$(echo "$RS_OUT" | grep -c 'no-pragma-test' || true)
+echo "  svelte-check:    $SC_NOPRAGMA"
+echo "  svelte-check-rs: $RS_NOPRAGMA"
+[ "$SC_NOPRAGMA" -eq "$RS_NOPRAGMA" ] && echo "  ✓ PASS"
 
 echo ""
 echo "src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector, export_let_unused):"

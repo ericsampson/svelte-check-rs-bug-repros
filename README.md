@@ -46,6 +46,7 @@ src/routes/pragma-test.svelte (should NOT warn - has svelte-ignore):
 src/routes/no-pragma-test.svelte (SHOULD warn - no pragma):
   svelte-check:    1
   svelte-check-rs: 1
+  ✓ PASS
 
 src/routes/missing-checks-test.svelte (SHOULD warn - block_empty, css_unused_selector, export_let_unused):
   svelte-check:    3

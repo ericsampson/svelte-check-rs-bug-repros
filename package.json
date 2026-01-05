@@ -1,30 +1,22 @@
 {
-	"name": "svelte-check-rs-tsconfig-repro",
+	"name": "svelte-check-rs-bug-repros",
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:rs": "svelte-check-rs --tsconfig ./tsconfig.json",
 		"test:repro": "./test-repro.sh"
 	},
 	"devDependencies": {
-		"@happy-dom/global-registrator": "^20.0.11",
 		"@sveltejs/adapter-auto": "^7.0.0",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
-		"@types/bun": "^1.3.5",
 		"svelte": "^5.45.6",
 		"svelte-check": "^4.3.5",
 		"svelte-check-rs": "^0.3.7",
 		"typescript": "^5.9.3",
 		"vite": "^7.2.6"
-	},
-	"dependencies": {
-		"convex": "^1.31.2"
 	}
 }
